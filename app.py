@@ -30,7 +30,7 @@ if 'processing_complete' not in st.session_state:
 if 'conversation_context' not in st.session_state:
     st.session_state.conversation_context = []
 
-st.title("Arch AI")
+st.title("Arc-AI")
 
 st.sidebar.info("Enter up to three URLs to process the content. Click 'Process URLs' to prepare the content for the chatbot. Use 'Summarize Articles' to generate brief summaries of the content.")
 
