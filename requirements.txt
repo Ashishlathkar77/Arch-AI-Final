@@ -1,0 +1,9 @@
+streamlit
+langchain
+openai
+faiss-cpu
+nltk
+transformers
+torch
+beautifulsoup4
+python-dotenv
