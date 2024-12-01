@@ -16,6 +16,8 @@ from bs4 import BeautifulSoup
 import torch
 import warnings
 from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
 nltk.download('punkt')
 warnings.filterwarnings("ignore", category=FutureWarning)
 torch.set_default_tensor_type(torch.DoubleTensor)
@@ -142,6 +144,58 @@ def smart_chunking(text, tokenizer, max_tokens=1024):
         chunks.append(' '.join(current_chunk))
     return chunks
 
+# Original Summarization Method - Commented Out
+# def summarize_articles(urls):
+#     try:
+#         status_placeholder.info("Generating summaries...")
+#         valid_urls = [url for url in urls if url.strip()]
+#         if not valid_urls:
+#             status_placeholder.error("No URLs have been processed for summarization.")
+#             return
+#         summaries = {}
+#         summarizer, tokenizer = load_summarizer()
+#         for idx, url in enumerate(valid_urls, start=1):
+#             scraped_data_filename = f"scraped_data_{idx}.txt"
+#             if not os.path.exists(scraped_data_filename):
+#                 continue
+#             with open(scraped_data_filename, "r", encoding="utf-8") as f:
+#                 content = f.read()
+#             cleaned_text = clean_text(content)
+#             if not cleaned_text.strip():
+#                 continue
+#             chunks = smart_chunking(cleaned_text, tokenizer, max_tokens=2048)
+#             summaries_list = []
+#             for chunk in chunks:
+#                 summary = summarizer(
+#                     chunk,
+#                     max_length=400,
+#                     min_length=100,
+#                     do_sample=False
+#                 )[0]['summary_text']
+#                 summaries_list.append(summary)
+#             combined_summary = " ".join(summaries_list)
+#             final_summary = combined_summary
+#             summary_filename = f"summary_{idx}.txt"
+#             with open(summary_filename, "w", encoding="utf-8") as f:
+#                 f.write(final_summary)
+#             summaries[url] = final_summary
+#         st.session_state.initial_message_displayed = False
+
+#         st.subheader("Summaries")
+#         for idx, url in enumerate(valid_urls, start=1):
+#             summary_filename = f"summary_{idx}.txt"
+#             if os.path.exists(summary_filename):
+#                 with open(summary_filename, "r", encoding="utf-8") as f:
+#                     summary_text = f.read()
+#                 st.write(f"**Summary for URL {idx}: {url}**")
+#                 st.write(summary_text)
+#                 st.markdown("---")
+#     except Exception as e:
+#         status_placeholder.error(f"Error generating summaries: {str(e)}")
+
+# New Simplified Summarization Method
+
+# Simplified Summarization Chain
 def summarize_articles(urls):
     try:
         status_placeholder.info("Generating summaries...")
@@ -149,34 +203,32 @@ def summarize_articles(urls):
         if not valid_urls:
             status_placeholder.error("No URLs have been processed for summarization.")
             return
+        
         summaries = {}
-        summarizer, tokenizer = load_summarizer()
+        summarization_prompt = PromptTemplate(
+            input_variables=["content"],
+            template=(
+                "Summarize the following article content in a concise manner:\n\n"
+                "{content}\n\nSummary:"
+            ),
+        )
+        summarize_chain = LLMChain(llm=llm, prompt=summarization_prompt)
+
         for idx, url in enumerate(valid_urls, start=1):
             scraped_data_filename = f"scraped_data_{idx}.txt"
             if not os.path.exists(scraped_data_filename):
                 continue
             with open(scraped_data_filename, "r", encoding="utf-8") as f:
                 content = f.read()
-            cleaned_text = clean_text(content)
-            if not cleaned_text.strip():
-                continue
-            chunks = smart_chunking(cleaned_text, tokenizer, max_tokens=2048)
-            summaries_list = []
-            for chunk in chunks:
-                summary = summarizer(
-                    chunk,
-                    max_length=400,
-                    min_length=100,
-                    do_sample=False
-                )[0]['summary_text']
-                summaries_list.append(summary)
-            combined_summary = " ".join(summaries_list)
-            final_summary = combined_summary
+
+            # Generate summary
+            result = summarize_chain.run(content=content)
+            summaries[url] = result
+
+            # Save summary to file
             summary_filename = f"summary_{idx}.txt"
             with open(summary_filename, "w", encoding="utf-8") as f:
-                f.write(final_summary)
-            summaries[url] = final_summary
-        st.session_state.initial_message_displayed = False
+                f.write(result)
 
         st.subheader("Summaries")
         for idx, url in enumerate(valid_urls, start=1):
