@@ -8,3 +8,5 @@ torch
 beautifulsoup4
 python-dotenv
 langchain_community
+unstructured
+tiktoken
