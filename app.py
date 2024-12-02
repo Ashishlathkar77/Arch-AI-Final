@@ -105,6 +105,19 @@ def process_urls(urls):
 
 @st.cache_resource
 def load_summarizer():
+    
+    #Loads a simple summarization chain using LangChain.
+    # Retained BART model code (not used)
+    # model_name_bart = "sshleifer/distilbart-xsum-12-6"
+    # summarizer_bart = pipeline(
+    #     "summarization",
+    #     model=model_name_bart,
+    #     tokenizer=model_name_bart,
+    #     device=0 if torch.cuda.is_available() else -1,
+    #     batch_size=16,
+    #     truncation=True
+    # )
+    # tokenizer_bart = BartTokenizerFast.from_pretrained(model_name_bart)
     return load_summarize_chain(llm, chain_type="refine")
 
 def summarize_articles(urls):
