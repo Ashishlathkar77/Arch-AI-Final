@@ -87,6 +87,10 @@ streamlit run app.py
 
 5. Open the application in your browser: After running the command, Streamlit will automatically open a local server, usually accessible at http://localhost:8501/. You can interact with the web interface to perform document research and queries.
 
+- Note: 
+This addition now clearly informs users that the initial model load may take some time (12-15 minutes) and reassures them that it will be faster on subsequent runs.
+
+
 ### How the System Works
 - Data Scraping: The project collects raw data from a variety of pre-configured sources (e.g., URLs, documents).
 
