@@ -1,4 +1,4 @@
-# Arch-AI Final - Intelligent Document Research Tool
+# Arc-AI - Intelligent Document Research Tool
 
 Welcome to the Arch-AI Final project! This tool provides a robust and scalable solution for intelligent document research, leveraging cutting-edge technologies in Natural Language Processing (NLP), vector embeddings, and information retrieval. The tool processes scraped data from various sources and offers a user-friendly interface to query and interact with the documents efficiently.
 
